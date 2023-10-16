@@ -103,13 +103,14 @@ persistence:
 externalDatabase:
   user: ""
   existingSecretKey: ""
+  password: ""
   host: ""
   port: ""
   db: ""
 
 externalRedis:
   user: ""
-  password:
+  password: ""
   host: ""
   port: ""
 
