@@ -66,7 +66,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "nexical-contracts-frontend.redisURL" -}}
-{{- printf "rediss://%s:%s@%s:%s" .Values.externalRedis.user .Values.externalRedis.password .Values.externalRedis.host .Values.externalRedis.port | quote }}
+{{- printf "redis://%s:%s@%s:%s" .Values.externalRedis.user .Values.externalRedis.password .Values.externalRedis.host .Values.externalRedis.port | quote }}
 {{- end }}
 
 {{- define "nexical-contracts-frontend.databaseURL" -}}
