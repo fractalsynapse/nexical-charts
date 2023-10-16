@@ -1,0 +1,25 @@
+image:
+  tag: "6069a93"
+  repository: "registry.digitalocean.com/prod-nexical/prod-nexical-frontend"
+
+imagePullSecrets:
+  - name: prod-nexical
+
+component: celery
+
+command: ['sh', '-c']
+
+args: ['/start-celery']
+
+externalDatabase:
+  user: 'doadmin'
+  host: 'private-prod-nexical-postgres-do-user-14706027-0.b.db.ondigitalocean.com'
+  port: '25060'
+  existingSecret: 
+  db: 'defaultdb'
+
+externalRedis:
+  user: 'default'
+  host: 'private-prod-nexical-redis-do-user-14706027-0.b.db.ondigitalocean.com'
+  existingSecret: 
+  port: '25061'
