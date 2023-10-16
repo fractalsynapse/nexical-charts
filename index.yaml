@@ -3,6 +3,16 @@ entries:
   nexical-contracts-app:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-10-16T23:07:45.536799009Z"
+    description: A Helm chart for Kubernetes
+    digest: 07ba23f6777845055b9521f354c0ecba860875cdc31ddb31091d639c54306353
+    name: nexical-contracts-app
+    type: application
+    urls:
+    - https://github.com/fractalsynapse/nexical-contracts-charts/releases/download/nexical-contracts-app-0.1.1/nexical-contracts-app-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-10-16T22:09:28.736233247Z"
     description: A Helm chart for Kubernetes
     digest: b6a745370cf3c5e06b7c80ef1b0ba69d29f55e5badc419e86c39042128adddf2
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/fractalsynapse/nexical-contracts-charts/releases/download/nexical-contracts-app-0.1.0/nexical-contracts-app-0.1.0.tgz
     version: 0.1.0
-generated: "2023-10-16T22:09:28.736237647Z"
+generated: "2023-10-16T23:07:45.536805409Z"
