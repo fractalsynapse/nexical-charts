@@ -143,15 +143,15 @@ extraVolumes: []
 extraVolumeMounts: []
 
 livenessProbe:
-  path: /
-  initialDelaySeconds: 600
+  probe: {}
+  initialDelaySeconds: 90
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 5
   successThreshold: 1
 
 readinessProbe:
-  path: /
+  probe: {}
   initialDelaySeconds: 30
   periodSeconds: 5
   timeoutSeconds: 1
