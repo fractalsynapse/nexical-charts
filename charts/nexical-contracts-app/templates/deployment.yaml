@@ -57,6 +57,8 @@ spec:
             value: {{ .Values.application.allowedHosts | quote }}
           - name: REDIS_URL
             value: {{ include "nexical-contracts-frontend.redisURL" . }}
+          - name: REDIS_TLS
+            value: "false"
           - name: POSTGRES_HOST
             value: {{ .Values.externalDatabase.host | quote }}
           - name: POSTGRES_USER
