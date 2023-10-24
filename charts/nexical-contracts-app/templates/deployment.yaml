@@ -76,7 +76,10 @@ spec:
           - name: POSTGRES_PORT
             value: {{ .Values.externalDatabase.port | quote }}
           - name: DATABASE_URL
-            value: {{ include "nexical-contracts-frontend.databaseURL" . }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.externalDatabase.existingSecretName | quote }}
+                key: {{ .Values.externalDatabase.databaseUrlKey | quote }}
           - name: CELERY_BROKER_URL
             valueFrom:
               secretKeyRef:

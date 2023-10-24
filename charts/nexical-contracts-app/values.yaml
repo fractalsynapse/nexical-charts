@@ -108,6 +108,7 @@ externalDatabase:
   host: ""
   port: ""
   db: ""
+  databaseUrl: ""
 
 externalRedis:
   user: ""
