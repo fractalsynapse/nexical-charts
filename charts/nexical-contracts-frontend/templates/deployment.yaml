@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexical-contracts-frontend.fullname" . }}
+  labels:
+    {{- include "nexical-contracts-frontend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nexical-contracts-frontend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nexical-contracts-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nexical-contracts-frontend.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containers.command }}
+          command:
+          - /bin/bash
+          args:
+          - {{ .Values.containers.command }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          env:
+          - name: DJANGO_SETTINGS_MODULE
+            value: config.settings.production
+          - name: DJANGO_SECRET_KEY
+            value: {{ .Values.application.secretKey | quote }}
+          - name: DJANGO_ADMIN_URL
+            value: {{ .Values.application.adminUrl | quote }}
+          - name: DJANGO_ALLOWED_HOSTS
+            value: {{ .Values.application.allowedHosts | quote }}
+          - name: REDIS_URL
+            value: {{ include "nexical-contracts-frontend.redisURL" . }}
+          - name: POSTGRES_HOST
+            value: {{ .Values.externalDatabase.host | quote }}
+          - name: POSTGRES_USER
+            value: {{ .Values.externalDatabase.user | quote }}
+          - name: POSTGRES_PASSWORD
+            value: {{ .Values.externalDatabase.password | quote }}
+          - name: POSTGRES_DB
+            value: {{ .Values.externalDatabase.db | quote }}
+          - name: POSTGRES_PORT
+            value: {{ .Values.externalDatabase.port | quote }}
+          - name: DATABASE_URL
+            value: {{ include "nexical-contracts-frontend.databaseURL" . }}
+          - name: CELERY_BROKER_URL
+            value: {{ include "nexical-contracts-frontend.redisURL" . }}
+          - name: USE_DOCKER
+            value: {{ .Values.useDocker | quote }}
+          - name: WEB_CONCURRENCY
+            value: {{ .Values.application.webConcurrency | quote }}
+          - name: MAILGUN_API_KEY
+            value: {{ .Values.externalServices.mailgun.ApiKey | quote }}
+          - name: STRIPE_PUBLIC_API_KEY
+            value: {{ .Values.externalServices.stripe.publicApiKey | quote }}
+          - name: STRIPE_SECRET_API_KEY
+            value: {{ .Values.externalServices.stripe.secretApiKey | quote }}
+          - name: STRIPE_WEBHOOK_SECRET
+            value: {{ .Values.externalServices.stripe.webhookSecret | quote }}
+          {{- if .Values.extraEnv }}
+          {{ toYaml .Values.extraEnv | indent 10 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+          - name: media
+            mountPath: /app/nexical_contracts/private_media
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      - name: media
+        persistentVolumeClaim:
+          {{- if not .Values.persistence.existingClaim }}
+          claimName: {{ include "nexical-contracts-frontend.fullname" . }}
+          {{- else }}
+          claimName: {{ .Values.persistence.existingClaim }}
+          {{- end }}
+      {{- end }}
