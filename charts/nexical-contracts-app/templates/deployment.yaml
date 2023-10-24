@@ -48,15 +48,18 @@ spec:
             value: "config.settings.production"
           - name: DJANGO_SECRET_KEY
             valueFrom:
-                secretKeyRef:
-                  name: {{ include "nexical-contracts-app.fullname" . }}
-                  key: {{ .Values.application.secretKey | quote }}
+              secretKeyRef:
+                name: {{ .Values.application.existingSecretName | quote }}
+                key: {{ .Values.application.secretKey | quote }}
           - name: DJANGO_ADMIN_URL
             value: {{ .Values.application.adminUrl | quote }}
           - name: DJANGO_ALLOWED_HOSTS
             value: {{ .Values.application.allowedHosts | quote }}
           - name: REDIS_URL
-            value: {{ include "nexical-contracts-frontend.redisURL" . }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.externalRedis.existingSecretName | quote }}
+                key: {{ .Values.externalRedis.existingSecretKey | quote }}
           - name: REDIS_TLS
             value: "false"
           - name: POSTGRES_HOST
@@ -65,9 +68,9 @@ spec:
             value: {{ .Values.externalDatabase.user | quote }}
           - name: POSTGRES_PASSWORD
             valueFrom:
-                secretKeyRef:
-                  name: {{ include "nexical-contracts-app.fullname" . }}
-                  key: {{ .Values.externalDatabase.existingSecretKey | quote }}
+              secretKeyRef:
+                name: {{ .Values.externalDatabase.existingSecretName | quote }}
+                key: {{ .Values.externalDatabase.existingSecretKey | quote }}
           - name: POSTGRES_DB
             value: {{ .Values.externalDatabase.db | quote }}
           - name: POSTGRES_PORT
@@ -75,28 +78,34 @@ spec:
           - name: DATABASE_URL
             value: {{ include "nexical-contracts-frontend.databaseURL" . }}
           - name: CELERY_BROKER_URL
-            value: {{ include "nexical-contracts-frontend.redisURL" . }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.externalRedis.existingSecretName | quote }}
+                key: {{ .Values.externalRedis.existingSecretKey | quote }}
           - name: USE_DOCKER
             value: {{ .Values.useDocker | quote }}
           - name: WEB_CONCURRENCY
             value: {{ .Values.application.webConcurrency | quote }}
           - name: MAILGUN_API_KEY
             valueFrom:
-                secretKeyRef:
-                  name: {{ include "nexical-contracts-app.fullname" . }}
-                  key: {{ .Values.externalServices.mailgun.apiKey | quote }}
+              secretKeyRef:
+                name: {{ .Values.externalServices.mailgun.existingSecretName | quote }}
+                key: {{ .Values.externalServices.mailgun.apiKey | quote }}
           - name: STRIPE_PUBLIC_API_KEY
-            value: {{ .Values.externalServices.stripe.publicApiKey | quote }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.externalServices.stripe.existingSecretName | quote }}
+                key: {{ .Values.externalServices.stripe.publicApiKey | quote }}
           - name: STRIPE_SECRET_API_KEY
             valueFrom:
-                secretKeyRef:
-                  name: {{ include "nexical-contracts-app.fullname" . }}
-                  key: {{ .Values.externalServices.stripe.secretApiKey | quote }}
+              secretKeyRef:
+                name: {{ .Values.externalServices.stripe.existingSecretName | quote }}
+                key: {{ .Values.externalServices.stripe.secretApiKey | quote }}
           - name: STRIPE_WEBHOOK_SECRET
             valueFrom:
-                secretKeyRef:
-                  name: {{ include "nexical-contracts-app.fullname" . }}
-                  key: {{ .Values.externalServices.stripe.webhookSecret | quote }}
+              secretKeyRef:
+                name: {{ .Values.externalServices.stripe.existingSecretName | quote }}
+                key: {{ .Values.externalServices.stripe.webhookSecretKey | quote }}
           {{- if .Values.extraEnvVars }}
           {{ toYaml .Values.extraEnv | indent 10 }}
           {{- end }}

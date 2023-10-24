@@ -102,6 +102,7 @@ persistence:
 
 externalDatabase:
   user: ""
+  existingSecretName: ""
   existingSecretKey: ""
   password: ""
   host: ""
@@ -110,20 +111,24 @@ externalDatabase:
 
 externalRedis:
   user: ""
-  password: ""
+  existingSecretName: ""
+  existingSecretKey: ""
   host: ""
   port: ""
 
 externalServices:
   mailgun:
+    existingSecretName: ""
     apiKey: ""
 
   stripe:
+    existingSecretName: ""
     publicApiKey: ""
     secretApiKey: ""
-    webhookSecret: ""
+    webhookSecretKey: ""
 
 application:
+  existingSecretName: ""
   secretKey: ""
   adminUrl: "__admin__/"
   allowedHosts: ".contracts.nexical.ai"
