@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nexical-contracts-app.fullname" . }}
+  name: {{ include "nexical-contracts-app.portal.fullname" . }}
   labels:
     {{- include "nexical-contracts-app.labels" . | nindent 4 }}
+    {{- include "nexical-contracts-app.portal.label" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.portal.autoscaling.enabled }}
+  replicas: {{ .Values.portal.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "nexical-contracts-app.selectorLabels" . | nindent 6 }}
+      {{- include "nexical-contracts-app.portal.label" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,6 +21,7 @@ spec:
       {{- end }}
       labels:
         {{- include "nexical-contracts-app.selectorLabels" . | nindent 8 }}
+        {{- include "nexical-contracts-app.portal.label" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,22 +31,15 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          {{- if .Values.command }}
-          command:
-          {{- range .Values.command }}
-          - {{ . }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.args }}
-          args:
-          {{ toYaml .Values.args | indent 12 | trim }}
-          {{- end }}
+        - name: portal
+          command: ["/start-portal"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          - name: BASE_PORTAL_URL
+            value: {{ .Values.portal.domain | quote }}
           - name: DJANGO_SETTINGS_MODULE
             value: "config.settings.production"
           - name: DJANGO_SECRET_KEY
@@ -109,12 +105,12 @@ spec:
               secretKeyRef:
                 name: {{ .Values.externalServices.stripe.existingSecretName | quote }}
                 key: {{ .Values.externalServices.stripe.webhookSecretKey | quote }}
-          {{- if .Values.extraEnvVars }}
-          {{ toYaml .Values.extraEnv | indent 10 }}
+          {{- if .Values.portal.extraEnvVars }}
+          {{ toYaml .Values.portal.extraEnv | indent 10 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.portal.service.port }}
               protocol: TCP
           {{- if .Values.livenessProbe.probe }}
           livenessProbe:
@@ -135,16 +131,16 @@ spec:
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.portal.resources | nindent 12 }}
+      {{- with .Values.portal.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.portal.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.portal.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
