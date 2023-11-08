@@ -39,7 +39,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
           - name: BASE_PORTAL_URL
-            value: {{ .Values.portal.domain | quote }}
+            value: {{ .Values.domain.portal | quote }}
+          - name: BASE_API_URL
+            value: {{ .Values.domain.api | quote }}
           - name: DJANGO_SETTINGS_MODULE
             value: "config.settings.production"
           - name: DJANGO_SECRET_KEY

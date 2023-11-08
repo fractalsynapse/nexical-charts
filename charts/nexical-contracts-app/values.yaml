@@ -47,6 +47,10 @@ persistence:
   existingClaim: ''
   subPath: ''
 
+domain:
+  portal: ""
+  api: ""
+
 externalDatabase:
   user: ""
   existingSecretName: ""
@@ -144,8 +148,6 @@ portal:
 
 api:
   replicaCount: 1
-
-  domain: "https://api.contracts.nexical.ai"
 
   autoscaling:
     enabled: false
