@@ -38,6 +38,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          - name: DOMAIN_NAME
+            value: {{ .Values.domain.base | quote }}
           - name: BASE_PORTAL_URL
             value: {{ .Values.domain.portal | quote }}
           - name: BASE_API_URL

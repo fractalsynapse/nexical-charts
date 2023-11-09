@@ -48,6 +48,7 @@ persistence:
   subPath: ''
 
 domain:
+  base: ""
   portal: ""
   api: ""
 
