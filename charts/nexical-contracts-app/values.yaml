@@ -1,190 +1,115 @@
-# Default values for nexical-contracts-app.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates
+labels: {}
+annotations: {}
 
 image:
-  repository: nginx
+  pullSecrets: []
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  repository: registry.digitalocean.com
+  image: prod-nexical/prod-nexical-frontend
+  tag: 106a817
 
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+roles: {}
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+serviceAccounts: {}
 
-podAnnotations: {}
+pvc:
+  claims:
+    media:
+      storageClass: longhorn
+      accessMode: ReadWriteMany
+      size: 10Gi
+  mounts: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+volumes:
+  config: {}
+  secret: {}
+  host: {}
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-persistence:
-  enabled: true
-  ## If defined, storageClassName: <storageClassName>
-  ## If undefined (the default) or set to null, no storageClassName spec is set, choosing the default provisioner
-  ##
-  storageClassName: longhorn
-  annotations: {}
-  accessModes:
-    - ReadWriteMany
-  size: 8Gi
-  existingClaim: ''
-  subPath: ''
-
-domain:
-  base: ""
-  portal: ""
-  api: ""
-
-externalDatabase:
-  user: ""
-  existingSecretName: ""
-  existingSecretKey: ""
-  databaseUrlKey: ""
-  password: ""
-  host: ""
-  port: ""
-  db: ""
-
-externalRedis:
-  user: ""
-  existingSecretName: ""
-  existingSecretKey: ""
-  host: ""
-  port: ""
-
-externalServices:
-  mailgun:
-    existingSecretName: ""
-    apiKey: ""
-
-  stripe:
-    existingSecretName: ""
-    publicApiKey: ""
-    secretApiKey: ""
-    webhookSecretKey: ""
-
-application:
-  existingSecretName: ""
-  secretKey: ""
-  adminUrl: "__admin__/"
-  allowedHosts: ".contracts.nexical.ai"
-  webConcurrency: 4
-
-livenessProbe:
-  probe: {}
-  initialDelaySeconds: 90
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 5
-  successThreshold: 1
-
-readinessProbe:
-  probe: {}
-  initialDelaySeconds: 30
-  periodSeconds: 5
-  timeoutSeconds: 1
-  failureThreshold: 5
-  successThreshold: 1
-
-portal:
+deployment:
   replicaCount: 1
 
-  domain: "https://contracts.nexical.ai"
+  revisionHistoryLimit: 1
+  updateStrategy:
+    type: RollingUpdate
 
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+  podSecurityContext: {}
+  containerSecurityContext: {}
 
-  service:
-    type: ClusterIP
-    port: 80
-
-  resources: {}
+  priorityClassName: ""
+  affinity: {}
+  podAffinityPreset: ""
+  podAntiAffinityPreset: soft
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
 
   nodeSelector: {}
-
   tolerations: []
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "100Mi"
 
-  affinity: {}
+  env:
+    DOMAIN_NAME: https://nexical.ai
 
-  extraEnvVars: []
-  #  - name: BEARER_AUTH
-  #    value: true
+  config:
+    - global
+  secrets:
+    - global
 
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  protocol: HTTP
+  port: 5000
 
-api:
-  replicaCount: 1
+  livenessProbe:
+    endpoint: "/status"
+    failureThreshold: 20
+    initialDelaySeconds: 5
+    periodSeconds: 6
+    successThreshold: 1
+    timeoutSeconds: 5
 
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+  readinessProbe:
+    endpoint: "/status"
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    successThreshold: 3
+    timeoutSeconds: 5
 
-  service:
-    type: ClusterIP
-    port: 80
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 4
+  avgCpuUtilization: 70
 
-  resources: {}
+service:
+  type: ClusterIP
+  protocol: http
+  port: 80
 
-  nodeSelector: {}
+ingress:
+  className: ''
+  hosts: []
+  tls: []
+  #   - secretName: origin-cert
 
-  tolerations: []
-
-  affinity: {}
-
-  extraEnvVars: []
-  #  - name: BEARER_AUTH
-  #    value: true
-
-  ingress:
-    enabled: false
-    className: ""
-    annotations: {}
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: chart-example.local
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
-    tls: []
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+services:
+  portal:
+    image:
+      entrypoint: "start-portal"
+    pvc:
+      mounts:
+        "/app/nexical_contracts/private_media": media
+    deployment:
+      config:
+        - global
+        - portal
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "command-api.${domain}"
