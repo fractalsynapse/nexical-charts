@@ -136,7 +136,7 @@ ingress:
 services:
   portal-ui:
     image:
-      entrypoint: "/start-portal"
+      entrypoint: ["/entrypoint", "/start-portal"]
     pvc:
       mounts:
         "/app/nexical_contracts/media": public-media
@@ -162,7 +162,7 @@ services:
 
   portal-api:
     image:
-      entrypoint: "/start-api"
+      entrypoint: ["/entrypoint", "/start-api"]
     pvc:
       mounts:
         "/app/nexical_contracts/media": public-media
@@ -188,7 +188,7 @@ services:
 
   scheduler:
     image:
-      entrypoint: "/start-celerybeat"
+      entrypoint: ["/entrypoint", "/start-celerybeat"]
     deployment:
       config:
         - global
@@ -200,7 +200,7 @@ services:
 
   worker:
     image:
-      entrypoint: "/start-celeryworker"
+      entrypoint: ["/entrypoint", "/start-celeryworker"]
     pvc:
       mounts:
         "/app/nexical_contracts/media": public-media
@@ -216,7 +216,7 @@ services:
 
   tasks:
     image:
-      entrypoint: "/start-flower"
+      entrypoint: ["/entrypoint", "/start-flower"]
     deployment:
       config:
         - global
