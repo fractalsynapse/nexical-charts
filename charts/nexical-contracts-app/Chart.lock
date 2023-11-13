@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.12.10
+- name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 17.17.1
+- name: zimagi-lib
+  repository: https://charts.zimagi.com
+  version: 0.1.2
+digest: sha256:b64916dbc7ab9df3c69220871a1849e4d816544d8c647c49a113aa5a2b0c523b
+generated: "2023-11-12T21:40:04.765113268-05:00"
