@@ -35,8 +35,8 @@ image:
   pullSecrets: []
   pullPolicy: IfNotPresent
   repository: registry.digitalocean.com
-  image: prod-nexical/prod-nexical-frontend
-  tag: 106a817
+  image: prod-nexical-contracts/nexical-contracts-portal
+  tag: 0.1.0
 
 roles: {}
 
