@@ -51,7 +51,7 @@ pvc:
     private-media:
       storageClass: longhorn
       accessMode: ReadWriteMany
-      size: 100Gi
+      size: 10Gi
   mounts: {}
 
 volumes:
@@ -148,7 +148,7 @@ services:
       resources:
         requests:
           cpu: "100m"
-          memory: "100Mi"
+          memory: "1Gi"
     autoscaling:
       enabled: false
     service:
@@ -174,7 +174,7 @@ services:
       resources:
         requests:
           cpu: "100m"
-          memory: "100Mi"
+          memory: "1Gi"
     autoscaling:
       enabled: false
     service:
@@ -212,7 +212,7 @@ services:
       resources:
         requests:
           cpu: "100m"
-          memory: "100Mi"
+          memory: "1Gi"
 
   tasks:
     image:
