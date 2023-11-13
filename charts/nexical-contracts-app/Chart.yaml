@@ -1,19 +1,29 @@
 apiVersion: v2
-version: 0.3.0
+version: 1.0.0
+appVersion: 0.0.1
 
-name: zimagi
+name: nexical-contracts-app
 type: application
-description: A Helm chart for deploying the Zimagi data management platform.
+description: A Helm chart for deploying the Nexical Contracts portal.
+home: https://github.com/fractalsynapse/charts
 
 dependencies:
+- condition: postgresql.enabled
+  name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 12.x.x
+- condition: redis.enabled
+  name: redis
+  repository: https://charts.bitnami.com/bitnami
+  version: 17.x.x
 - name: zimagi-lib
   repository: https://charts.zimagi.com
   version: 0.x.x
 
 maintainers:
-- email: erik.jagyugya@dccs.tech
+- email: erik@fractalsynapse.com
   name: jagyugyaerik
   url: https://github.com/jagyugyaerik
-- email: adrian.webb@dccs.tech
+- email: adrian@fractalsynapse.com
   name: adrianwebb
   url: https://github.com/adrianwebb

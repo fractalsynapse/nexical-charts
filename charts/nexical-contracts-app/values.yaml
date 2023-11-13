@@ -1,5 +1,35 @@
 labels: {}
-annotations: {}
+annotations:
+  nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+
+postgresql:
+  enabled: true
+  fullnameOverride: postgresql
+  architecture: standalone
+  auth:
+    existingSecret: portal-db # keys: postgres-password, replication-password, password
+    database: zimagi
+    username: zimagi
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  volumePermissions:
+    enabled: true
+
+redis:
+  enabled: true
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    existingSecret: portal-db
+    existingSecretPasswordKey: redis-password
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+  volumePermissions:
+    enabled: true
 
 image:
   pullSecrets: []
@@ -14,10 +44,14 @@ serviceAccounts: {}
 
 pvc:
   claims:
-    media:
+    public-media:
       storageClass: longhorn
       accessMode: ReadWriteMany
-      size: 10Gi
+      size: 5Gi
+    private-media:
+      storageClass: longhorn
+      accessMode: ReadWriteMany
+      size: 100Gi
   mounts: {}
 
 volumes:
@@ -52,7 +86,12 @@ deployment:
       memory: "100Mi"
 
   env:
-    DOMAIN_NAME: https://nexical.ai
+    POSTGRES_HOST: "{{ .Values.postgresql.fullnameOverride }}"
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: "{{ .Values.postgresql.auth.database }}"
+    POSTGRES_USER: "{{ .Values.postgresql.auth.username }}"
+    REDIS_HOST: "{{ .Values.redis.fullnameOverride }}-master"
+    REDIS_PORT: 6379
 
   config:
     - global
@@ -95,16 +134,21 @@ ingress:
   #   - secretName: origin-cert
 
 services:
-  portal:
+  portal-ui:
     image:
-      entrypoint: "start-portal"
+      entrypoint: "/start-portal"
     pvc:
       mounts:
-        "/app/nexical_contracts/private_media": media
+        "/app/nexical_contracts/media": public-media
+        "/app/nexical_contracts/private_media": private-media
     deployment:
       config:
         - global
-        - portal
+        - portal-ui
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
     autoscaling:
       enabled: false
     service:
@@ -112,4 +156,84 @@ services:
     ingress:
       enabled: false
       # hosts:
-      #   - host: "command-api.${domain}"
+      #   - host: "${domain}"
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "86400" # 1 day
+
+  portal-api:
+    image:
+      entrypoint: "/start-api"
+    pvc:
+      mounts:
+        "/app/nexical_contracts/media": public-media
+        "/app/nexical_contracts/private_media": private-media
+    deployment:
+      config:
+        - global
+        - portal-api
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "api.${domain}"
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600" # 10 minutes
+
+  scheduler:
+    image:
+      entrypoint: "/start-celerybeat"
+    deployment:
+      config:
+        - global
+        - scheduler
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
+
+  worker:
+    image:
+      entrypoint: "/start-celeryworker"
+    pvc:
+      mounts:
+        "/app/nexical_contracts/media": public-media
+        "/app/nexical_contracts/private_media": private-media
+    deployment:
+      config:
+        - global
+        - worker
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
+
+  tasks:
+    image:
+      entrypoint: "/start-flower"
+    deployment:
+      config:
+        - global
+        - flower
+      livenessProbe:
+        endpoint: "/"
+      readinessProbe:
+        endpoint: "/"
+      resources:
+        requests:
+          cpu: "20m"
+          memory: "50Mi"
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "tasks.${domain}"

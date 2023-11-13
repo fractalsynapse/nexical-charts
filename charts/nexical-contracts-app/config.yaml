@@ -1,7 +1,17 @@
 global:
-  data:
-    
+  data: {}
 
-portal:
-  data:
-    
+portal-ui:
+  data: {}
+
+portal-api:
+  data: {}
+
+scheduler:
+  data: {}
+
+worker:
+  data: {}
+
+flower:
+  data: {}

@@ -1,4 +1,4 @@
 {{/*
-Generate a Zimagi platform
+Generate the Nexical Contracts Portal service definition
 */}}
 {{ include "zimagi-lib.app" (list . .Values) }}
