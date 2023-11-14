@@ -221,6 +221,7 @@ services:
       config:
         - global
         - flower
+      port: 5555
       livenessProbe:
         endpoint: "/"
       readinessProbe:
