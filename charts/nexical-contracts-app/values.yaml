@@ -102,7 +102,7 @@ deployment:
   port: 5000
 
   livenessProbe:
-    endpoint: "/status"
+    endpoint: "/status/"
     failureThreshold: 20
     initialDelaySeconds: 5
     periodSeconds: 6
@@ -110,7 +110,7 @@ deployment:
     timeoutSeconds: 5
 
   readinessProbe:
-    endpoint: "/status"
+    endpoint: "/status/"
     failureThreshold: 3
     initialDelaySeconds: 10
     periodSeconds: 5
