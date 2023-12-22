@@ -1,7 +1,7 @@
 apiVersion: v2
-version: 0.3.7
+version: 0.3.8
 
-name: nexical-contracts-app
+name: nexical-contracts-portal
 type: application
 description: A Helm chart for deploying the Nexical Contracts portal.
 home: https://github.com/fractalsynapse/charts
