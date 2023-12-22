@@ -390,4 +390,34 @@ entries:
     urls:
     - https://github.com/fractalsynapse/nexical-contracts-charts/releases/download/nexical-contracts-frontend-0.1.1/nexical-contracts-frontend-0.1.1.tgz
     version: 0.1.1
-generated: "2023-11-14T16:55:53.655610886Z"
+  nexical-contracts-portal:
+  - apiVersion: v2
+    created: "2023-12-22T11:07:26.895537824Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 17.x.x
+    - name: zimagi-lib
+      repository: https://charts.zimagi.com
+      version: 0.x.x
+    description: A Helm chart for deploying the Nexical Contracts portal.
+    digest: ccf3dc9c2f8171d79f69f0da492ee68a4b542982f27588b24ac22b6db30cf96e
+    home: https://github.com/fractalsynapse/charts
+    maintainers:
+    - email: erik@fractalsynapse.com
+      name: jagyugyaerik
+      url: https://github.com/jagyugyaerik
+    - email: adrian@fractalsynapse.com
+      name: adrianwebb
+      url: https://github.com/adrianwebb
+    name: nexical-contracts-portal
+    type: application
+    urls:
+    - https://github.com/fractalsynapse/nexical-charts/releases/download/nexical-contracts-portal-0.3.8/nexical-contracts-portal-0.3.8.tgz
+    version: 0.3.8
+generated: "2023-12-22T11:07:26.895593758Z"
