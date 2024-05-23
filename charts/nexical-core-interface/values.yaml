@@ -1,0 +1,240 @@
+labels: {}
+annotations:
+  nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+
+postgresql:
+  enabled: true
+  fullnameOverride: postgresql
+  architecture: standalone
+  auth:
+    existingSecret: portal-db # keys: postgres-password, replication-password, password
+    database: zimagi
+    username: zimagi
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+  volumePermissions:
+    enabled: true
+
+redis:
+  enabled: true
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    existingSecret: portal-db
+    existingSecretPasswordKey: redis-password
+  master:
+    persistence:
+      enabled: true
+      size: 5Gi
+  volumePermissions:
+    enabled: true
+
+image:
+  pullSecrets: []
+  pullPolicy: IfNotPresent
+  repository: registry.digitalocean.com
+  image: prod-nexical-core/nexical-core-interface
+  tag: 0.1.0
+
+roles: {}
+
+serviceAccounts: {}
+
+pvc:
+  claims:
+    public-media:
+      storageClass: longhorn
+      accessMode: ReadWriteMany
+      size: 5Gi
+    private-media:
+      storageClass: longhorn
+      accessMode: ReadWriteMany
+      size: 10Gi
+  mounts: {}
+
+volumes:
+  config: {}
+  secret: {}
+  host: {}
+
+deployment:
+  replicaCount: 1
+
+  revisionHistoryLimit: 1
+  updateStrategy:
+    type: RollingUpdate
+
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+  priorityClassName: ""
+  affinity: {}
+  podAffinityPreset: ""
+  podAntiAffinityPreset: soft
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+
+  nodeSelector: {}
+  tolerations: []
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "100Mi"
+
+  env:
+    POSTGRES_HOST: "{{ .Values.postgresql.fullnameOverride }}"
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: "{{ .Values.postgresql.auth.database }}"
+    POSTGRES_USER: "{{ .Values.postgresql.auth.username }}"
+    REDIS_HOST: "{{ .Values.redis.fullnameOverride }}-master"
+    REDIS_PORT: 6379
+
+  config:
+    - global
+  secrets:
+    - global
+
+  protocol: HTTP
+  port: 5000
+
+  livenessProbe:
+    endpoint: "/status/"
+    failureThreshold: 20
+    initialDelaySeconds: 5
+    periodSeconds: 6
+    successThreshold: 1
+    timeoutSeconds: 5
+
+  readinessProbe:
+    endpoint: "/status/"
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    successThreshold: 3
+    timeoutSeconds: 5
+
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 4
+  avgCpuUtilization: 70
+
+service:
+  type: ClusterIP
+  protocol: http
+  port: 80
+
+ingress:
+  className: ''
+  hosts: []
+  tls: []
+  #   - secretName: origin-cert
+
+services:
+  ui:
+    image:
+      entrypoint: ["/entrypoint", "/start-ui"]
+    pvc:
+      mounts:
+        "/app/app/media": public-media
+        "/app/app/private_media": private-media
+    deployment:
+      config:
+        - global
+        - ui
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "${domain}"
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "86400" # 1 day
+
+  api:
+    image:
+      entrypoint: ["/entrypoint", "/start-api"]
+    pvc:
+      mounts:
+        "/app/app/media": public-media
+        "/app/app/private_media": private-media
+    deployment:
+      config:
+        - global
+        - api
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "api.${domain}"
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600" # 10 minutes
+
+  scheduler:
+    image:
+      entrypoint: ["/entrypoint", "/start-scheduler"]
+    deployment:
+      config:
+        - global
+        - scheduler
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "100Mi"
+
+  worker:
+    image:
+      entrypoint: ["/entrypoint", "/start-worker"]
+    pvc:
+      mounts:
+        "/app/app/media": public-media
+        "/app/app/private_media": private-media
+    deployment:
+      config:
+        - global
+        - worker
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "1Gi"
+
+  tasks:
+    image:
+      entrypoint: ["/entrypoint", "/start-flower"]
+    deployment:
+      config:
+        - global
+        - flower
+      port: 5555
+      livenessProbe:
+        endpoint: "/"
+      readinessProbe:
+        endpoint: "/"
+      resources:
+        requests:
+          cpu: "20m"
+          memory: "50Mi"
+    autoscaling:
+      enabled: false
+    service:
+      enabled: true
+    ingress:
+      enabled: false
+      # hosts:
+      #   - host: "tasks.${domain}"
