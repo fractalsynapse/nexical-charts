@@ -1,5 +1,5 @@
 apiVersion: v2
-version: 0.3.10
+version: 0.3.11
 
 name: nexical-contracts-portal
 type: application
@@ -10,14 +10,14 @@ dependencies:
 - condition: postgresql.enabled
   name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 12.x.x
+  version: 15.x.x
 - condition: redis.enabled
   name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 17.x.x
+  version: 19.x.x
 - name: zimagi-lib
   repository: https://charts.zimagi.com
-  version: 0.1.4
+  version: 0.1.5
 
 maintainers:
 - email: erik@fractalsynapse.com
