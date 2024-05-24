@@ -7,7 +7,7 @@ postgresql:
   fullnameOverride: postgresql
   architecture: standalone
   auth:
-    existingSecret: portal-db # keys: postgres-password, replication-password, password
+    existingSecret: db # keys: postgres-password, replication-password, password
     database: zimagi
     username: zimagi
   primary:
@@ -22,7 +22,7 @@ redis:
   fullnameOverride: redis
   architecture: standalone
   auth:
-    existingSecret: portal-db
+    existingSecret: db
     existingSecretPasswordKey: redis-password
   master:
     persistence:
@@ -35,8 +35,8 @@ image:
   pullSecrets: []
   pullPolicy: IfNotPresent
   repository: registry.digitalocean.com
-  image: prod-nexical-core/nexical-core-interface
-  tag: 0.1.0
+  image: prod-nexical-contracts/nexical-core-interface
+  tag: 0.1.1
 
 roles: {}
 

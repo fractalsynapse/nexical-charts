@@ -1,10 +1,10 @@
 global:
   data: {}
 
-portal-ui:
+ui:
   data: {}
 
-portal-api:
+api:
   data: {}
 
 scheduler:
