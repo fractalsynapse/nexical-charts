@@ -392,6 +392,35 @@ entries:
     version: 0.1.1
   nexical-contracts-portal:
   - apiVersion: v2
+    created: "2024-05-24T02:00:27.555040529Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.x.x
+    - name: zimagi-lib
+      repository: https://charts.zimagi.com
+      version: 0.1.5
+    description: A Helm chart for deploying the Nexical Contracts portal.
+    digest: 1f794f76cf3f44f343c5fe55574921531d687f306d72d558293f953d6ae6a866
+    home: https://github.com/fractalsynapse/charts
+    maintainers:
+    - email: erik@fractalsynapse.com
+      name: jagyugyaerik
+      url: https://github.com/jagyugyaerik
+    - email: adrian@fractalsynapse.com
+      name: adrianwebb
+      url: https://github.com/adrianwebb
+    name: nexical-contracts-portal
+    type: application
+    urls:
+    - https://github.com/fractalsynapse/nexical-charts/releases/download/nexical-contracts-portal-0.3.11/nexical-contracts-portal-0.3.11.tgz
+    version: 0.3.11
+  - apiVersion: v2
     created: "2024-01-14T00:30:07.18133343Z"
     dependencies:
     - condition: postgresql.enabled
@@ -478,4 +507,34 @@ entries:
     urls:
     - https://github.com/fractalsynapse/nexical-charts/releases/download/nexical-contracts-portal-0.3.8/nexical-contracts-portal-0.3.8.tgz
     version: 0.3.8
-generated: "2024-01-14T00:30:07.181389945Z"
+  nexical-core-interface:
+  - apiVersion: v2
+    created: "2024-05-24T02:00:27.690742933Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.x.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.x.x
+    - name: zimagi-lib
+      repository: https://charts.zimagi.com
+      version: 0.1.5
+    description: A Helm chart for deploying the Nexical Core Interface.
+    digest: b48d39f05085c026bd20bf56b69e7bccee3c69425dc33e12fc07e892cde1fdb0
+    home: https://github.com/fractalsynapse/charts
+    maintainers:
+    - email: erik@fractalsynapse.com
+      name: jagyugyaerik
+      url: https://github.com/jagyugyaerik
+    - email: adrian@fractalsynapse.com
+      name: adrianwebb
+      url: https://github.com/adrianwebb
+    name: nexical-core-interface
+    type: application
+    urls:
+    - https://github.com/fractalsynapse/nexical-charts/releases/download/nexical-core-interface-0.1.0/nexical-core-interface-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-05-24T02:00:27.690804378Z"
